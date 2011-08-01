@@ -64,8 +64,12 @@ module Rabl
     def fetch_source(file, options={})
       root_path = Rails.root if defined?(Rails)
       root_path = Padrino.root if defined?(Padrino)
-      view_path = options[:view_path] || File.join(root_path, "app/views/")
-      file_path = Dir[File.join(view_path, file + "*.rabl")].first
+      if @options[:scope].respond_to?(:lookup_context)
+        file_path = @options[:scope].lookup_context.find_template(file, nil, false).identifier
+      else
+        view_path = options[:view_path] || File.join(root_path, "app/views/")
+        file_path = Dir[File.join(view_path, file + "*.rabl")].first
+      end
       File.read(file_path) if file_path
     end
   end
